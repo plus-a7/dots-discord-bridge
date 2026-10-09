@@ -1,6 +1,6 @@
-# Discord ↔ actual dot bridge (offline release candidate)
+# Discord ↔ dot bridge（ローカル検証済み・実接続未完了）
 
-このコードは指定guild内の既存権限で閲覧できるチャンネル／案件スレッドと、購読した実際のdot会話をつなぐ最小ブリッジの候補です。別LLM、UI、えるの人格模倣は含みません。既存FF15 Bot/POM/gatewayへの依存・変更はありません。import・build・demoは接続を起動しません。全テストには明示起動する一時127.0.0.1モックHTTP listenerを含み、終了時に閉じます。Bot login、外部公開、トンネル、プラグイン接続、実投稿は行いません。JWKS取得provider、専用秘密ファイルreader、明示login CLIと未設定LaunchAgentテンプレートは用意しました。実値は未設定・常駐未登録です。本人操作が残る最小手順は [接続手順](docs/connect.md) を参照してください。
+このコードは指定guild内の既存権限で閲覧できるチャンネル／案件スレッドと、購読した実際のdot会話をつなぐ最小ブリッジの候補です。別LLM、UI、えるの人格模倣は含みません。既存FF15 Bot/POM/gatewayへの依存・変更はありません。import・build・demoは接続を起動しません。全テストには明示起動する一時127.0.0.1モックHTTP listenerを含み、終了時に閉じます。ここに記録した検証ではBot login、サービス外部公開、トンネル、プラグイン接続、実投稿を行っていません。CLIによる実接続は別の承認・実設定・受入試験が必要です。JWKS取得provider、専用秘密ファイルreader、明示login CLIと未設定LaunchAgentテンプレートは用意しました。実値は未設定・常駐未登録です。配布後のローカル確認は [セットアップ](docs/setup.md)、本人が朝に行う確認は [朝の最小手順](docs/morning.md)、実設定は [接続手順](docs/connect.md) を参照してください。
 
 ## 確認した公式仕様と境界
 
@@ -36,7 +36,8 @@ Guild内でownerのメンションなし本文を取得するにはMessageConten
 | `src/mock-runtime.ts` | 認証なし・ネットワークなしのin-process組立と手動protocolデモ |
 | `test/guild.test.ts` | 全guild owner限定、動的宛先とmock組立の検証 |
 | `test/bridge.test.ts` | 完全オフラインの署名receiver、Discord sender、SDK endpointテスト |
-| `test/recovery.test.ts` | DNS準備中の取消し、クラッシュ再送、署名期限、Bot再入力、保存上限の回帰検証 |
+| `test/recovery.test.ts` / `test/integration-recovery.test.ts` | DNS取消し、再起動/再送、二重配送、uncertain返信、停止・期限・権限エラーの回帰/統合検証 |
+| `scripts/check-setup.mjs` | 公開checkoutのNode/依存/Swift/build/disabledテンプレートだけを確認。秘密・実設定・ネットワークは対象外 |
 
 採用候補は `mode: guild_owner` です。指定した1guild全体を対象とし、既存Bot権限で受信／閲覧できる投稿元だけを扱います。channel列挙は不要です。ownerの非Bot投稿だけをメンションなしで拾い、第三者、Bot、webhook、自己投稿、guild外、DMを除外します。全guild指定は権限追加・Bot招待・thread参加・archive解除を許可しません。通常テキストchannelとthreadに対応し、guild/channel/thread（通常channelではthread=null）の組を不変のcase IDとして永続保存します。返信先は投稿元だけで、名前やtool引数から変更できません。
 
@@ -58,11 +59,13 @@ cd discord-dot-bridge
 npm ci --ignore-scripts --no-audit --no-fund
 npm run typecheck
 npm run build:keychain
+npm run build
+npm run setup:check
 npm test
 npm run demo:mock
 ```
 
-依存の取得以外、外部通信は不要です。`npm test`は144件、`npm run test:unit`はsocketなし119件、`npm run test:loopback`は一時127.0.0.1 listenerを使う25件です。sandboxでbindが禁止される環境ではloopback試験だけローカルlistenerの実行許可が必要です。testは実際の公式MCP v2 SDKをRequest/Responseで通し、モックcallbackが署名を検証し、モックDiscordへ返信します。fixtureからの手動tool呼出しはdotの代替LLMではなく、プロトコルの検証です。テスト用ID・会話はすべてダミーで、実データを取り込みません。
+依存の取得以外、外部通信は不要です。`npm test`は150件、`npm run test:unit`はsocketなし125件、`npm run test:loopback`は一時127.0.0.1 listenerを使う25件です。sandboxでbindが禁止される環境ではloopback試験だけローカルlistenerの実行許可が必要です。testは実際の公式MCP v2 SDKをRequest/Responseで通し、モックcallbackが署名を検証し、モックDiscordへ返信します。fixtureからの手動tool呼出しはdotの代替LLMではなく、プロトコルの検証です。テスト用ID・会話はすべてダミーで、実データを取り込みません。
 
 `demo:mock` は資格情報・環境変数を読まず、HTTP listenerも作りません。認証なしのRequest/Responseを同一プロセスで公式SDKへ渡し、署名確認済みのモックEventsとread/replyを手動で通します。実dotの代役はありません。出力は `mockOnly:true, liveDiscordPosts:0, liveDotWake:false` です。認証なしの公開endpointは提供していません。
 
@@ -97,13 +100,13 @@ callbackは明示した完全一致hostだけを許可し、HTTPS/443、userinfo
 3. Keychain参照の組込みは本人承認済みでdisabledテンプレートへ反映。実読出し/ACL/常駐セッションは未試験。private設定、MessageContentIntentの現在設定と必要な利用権限を確認。値を会話・ソース・ログへ表示／コピーしません。既存channel/OS権限を勝手に拡張しません。
 4. [接続候補比較](docs/connection-options.md)のHTTPSまたはSecure MCP Tunnel、アクセス認証、専用principal/chat束縛を選び、その費用・既存契約・追加権限が許容範囲内か確認。Tunnelは未作成・未接続です。標準OAuth経路も実IdPへの適合と実resource/audienceの確認が必要です。
 5. 選択後、実装済みのprivate token reader/JWKS provider/login bootstrapへ承認済みの実値を設定する。callback host、プラグイン接続、実際の「える」会話の永続購読、常駐/rollbackを承認。
-6. 対象guild内の限定投稿元で実投稿往復試験を承認。Gateway受信→署名callback→当該dot wake→read/reply→同じchannel/thread返信、停止/解除/再起動を実測。
+6. 対象guildの既存テスト用thread、専用経路・認証・排他的Bot所有を確認した後、利用者の許可内でGateway受信→署名callback→当該dot wake→read/reply→同じthread返信を実測する。新OAuth grant、永続アクセス、課金、入口の新設や既存runtimeの恒久停止は、それぞれ個別に判断する。
 
-Keychain参照名の組込みだけは本人の個別承認後に完了しました。実秘密読出し・Bot接続・外部設定・常駐操作は未実施です。ローカルMCP toolsが見えるだけ、callbackが2xxだけでは6の成功と報告しません。
+Keychain参照名の組込みは完了しています。実秘密読出し・Bot接続・外部設定・常駐操作は未実施です。ローカルMCP toolsが見えるだけ、callbackが2xxだけでは6の成功と報告しません。
 
 ## 公開準備と実装経路
 
-ソース/モック/手順はprivate設定・秘密・個人会話から分離しています。LICENSEは元コードの公開ライセンス未選定を明示し、NOTICEと [依存ライセンス記録](THIRD_PARTY_NOTICES.md) に採用版の確認結果を記録しました。lockfileは固定版です。shipped license/notice本文を `docs/licenses/` に保存しました。npm同梱のMIT本文がない3パッケージも、採用版のnpm gitHeadと一致する上流commitでname/version/licenseを照合し、本文・copyright・出典URL・SHA-256を補完済みです。将来の配布物には実際に含む依存の再点検と元コードのライセンス選定が必要です。この実装作業では公開repo作成、push、npm公開を行っていません。本人が許可した公開repo作成・安全なstagingは別のGit担当の作業です。元コードのLICENSEを勝手に選定せず、[公開ファイル範囲](docs/publication-scope.md)を引き渡します。
+ソース/モック/手順はprivate設定・秘密・個人会話から分離しています。LICENSEは元コードの公開ライセンス未選定を明示し、NOTICEと [依存ライセンス記録](THIRD_PARTY_NOTICES.md) に採用版の確認結果を記録しました。lockfileは固定版です。shipped license/notice本文を `docs/licenses/` に保存しました。npm同梱のMIT本文がない3パッケージも、採用版のnpm gitHeadと一致する上流commitでname/version/licenseを照合し、本文・copyright・出典URL・SHA-256を補完済みです。将来の配布物には実際に含む依存の再点検と元コードのライセンス選定が必要です。npmやプラグインの公開は行っていません。ソースrepoは [plus-a7/dots-discord-bridge](https://github.com/plus-a7/dots-discord-bridge) に公開済みです。これは実Discord/ChatGPT接続やプラグイン公開を示しません。元コードのLICENSEを勝手に選定せず、[公開ファイル範囲](docs/publication-scope.md)を引き渡します。
 
 既存Claude Code CLIの存在/版だけを確認しました。新しい認証やAPI費用なしで利用できる経路をこの作業では確定できなかったため、Claudeの生成実行は行わず、独立レビューとオフラインテストで確認しています。追加セッション履歴を参照していません。
 

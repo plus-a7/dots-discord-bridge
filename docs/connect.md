@@ -1,6 +1,6 @@
-# 接続手順：本人操作が必要な残り
+# 実接続に残る条件
 
-2026-10-09。JWKS取得、秘密ファイルreader、明示Bot login、排他lock、CLI停止処理、Mac常駐テンプレートまでコードを用意しました。現在は**実設定未入力・常駐未登録・実接続なし**です。Keychain参照名の組込みは本人承認済みで、Hermes Bot停止は許可済みで、直近の限定読取では対象LaunchAgent/既知entrypoint PIDを確認できませんでした。ただし既存plistの自動起動設定は残り、将来の再起動防止は証明されていません。新しい常駐変更は行っていません。以下の実環境確認と操作承認が残っています。
+2026-10-09。JWKS取得、秘密ファイルreader、明示Bot login、排他lock、CLI停止処理、Mac常駐テンプレートまでコードを用意しました。現在は**実設定未入力・常駐未登録・実接続なし**です。配布用テンプレートにはKeychain参照名を組み込んでいますが、実読出しやBot所有は別の受入確認が必要です。既存runtimeの停止・自動起動・再起動条件は利用者の環境で確認してください。実接続に必要な条件は [朝の手順](morning.md)の順で照合します。
 
 1. **使うBotと閲覧範囲を確定する。** owner/Bot/guildの実ID、MessageContentIntent、既存ViewChannel/SendMessages/SendMessagesInThreadsを本人が確認する。既存Hermesを使うなら全Gatewayと監督の排他的切替・復帰を個別承認する。既存gatewayを変更しない場合は専用Botの承認が必要。同じtokenの並行利用はしない。
 2. **専用の入口と認証を確定する。** Cloudflareは必須ではなく、標準OAuth＋Secure MCP TunnelまたはHTTPSを選べる。`authentication.kind` を明示し、既存IdPのRFC 9068 RS256 profile・issuer/JWKS/resource/audience/owner subject/scopeと利用権限・費用を確認する。実IdPは未確定。Cloudflareは任意adapterとして残す。Tunnelのruntime認証はowner認証とは別。詳細は [oauth.md](oauth.md)。既存POM/FF15の設定は対象外。
@@ -23,7 +23,7 @@
 npm run config:check -- /absolute/path/to/private/deployment.json
 ```
 
-実行は**上記接続承認後のみ**です。今回このコマンドを実設定で実行していません。
+実行は**既存の許可内の実設定と排他所有を確認できた場合、または不足する操作の追加承認後のみ**です。今回このコマンドを実設定で実行していません。
 
 ```sh
 node /absolute/path/to/project/dist/src/main.js run --config /absolute/path/to/private/deployment.json --activate
@@ -35,4 +35,4 @@ node /absolute/path/to/project/dist/src/main.js run --config /absolute/path/to/p
 
 共有Bot lockはこのbootstrapを使うinstance間の仕組みで、既存Hermesなど別runtimeとの排他を自動証明しません。終了と接続所有者を確認するまで既存runtimeの復帰や新instanceの起動へ進まないでください。通常の再接続・再起動は保存済みpendingを復旧しますが、未受信messageのbackfillはありません。
 
-全144件のうち119件socket-free、25件loopbackです。最新の実行結果は [検証記録](validation.md)を参照してください。実Keychain ACL/unlock/UI制限、実IdP issuer/TLS/OAuth、公式Tunnel client/metadata書換え、権限cacheの反映、Gateway reconnect/rate limits、実dot wake、Mac常駐/再起動は未試験です。[検証記録](validation.md)・[詳細手順とrollback](operations.md)・[独立レビュー](independent-review.md)を参照してください。
+全150件のうち125件socket-free、25件loopbackです。最新の実行結果は [検証記録](validation.md)を参照してください。実Keychain ACL/unlock/UI制限、実IdP issuer/TLS/OAuth、公式Tunnel client/metadata書換え、権限cacheの反映、Gateway reconnect/rate limits、実dot wake、Mac常駐/再起動は未試験です。[検証記録](validation.md)・[詳細手順とrollback](operations.md)・[独立レビュー](independent-review.md)を参照してください。

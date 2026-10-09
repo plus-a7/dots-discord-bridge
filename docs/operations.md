@@ -61,6 +61,6 @@ modern SDKの手動protocol検証ではMCP-Protocol-Version/Mcp-Method headers�
 
 ## オフラインで再現できること
 
-`npm run typecheck`、`npm test`、`npm run demo:mock`。Keychain native helperはmacOSのSwift compilerでコンパイルし、試験はKeychain IO前の拒否またはfake pipeだけを使います。実項目へ問い合わせません。認証設定や実Bot接続を必要とせず、dummy dataのみで動きます。全144件のうち`test:unit`119件はsocketなし、`test:loopback`25件はliteral127.0.0.1の一時listenerとfake issuer/Discordだけを使います。`test/recovery.test.ts`のDNS/HTTPS seamは外部接続を開始しないfakeを使い、受領直後のクラッシュはmock callbackと一時SQLiteを使った子プロセスで検証します。fixtureの手動tool呼出しは実dot受入の代わりになりません。
+`npm run typecheck`、`npm test`、`npm run demo:mock`。Keychain native helperはmacOSのSwift compilerでコンパイルし、試験はKeychain IO前の拒否またはfake pipeだけを使います。実項目へ問い合わせません。認証設定や実Bot接続を必要とせず、dummy dataのみで動きます。全150件のうち`test:unit`125件はsocketなし、`test:loopback`25件はliteral127.0.0.1の一時listenerとfake issuer/Discordだけを使います。`test/recovery.test.ts`のDNS/HTTPS seamは外部接続を開始しないfakeを使い、受領直後のクラッシュはmock callbackと一時SQLiteを使った子プロセスで検証します。fixtureの手動tool呼出しは実dot受入の代わりになりません。
 
-Keychain参照名の組込みと安全なローダー実装は本人の個別承認後に完了しました。Hermes Bot停止も許可済みですが、限定読取では対象LaunchAgent/既知entrypoint PIDが見えなかったものの、既存plistの自動起動設定は残り、再起動防止の確認は別途必要です。他稼働タスクを巻き込む一括停止はしません。実秘密読出し・Bot起動・常駐登録、Cloudflare初期設定・Tunnel/Access/DNS作成、権限変更、plugin接続、実投稿、課金、公開は今回行っていません。[Keychain手順](keychain.md)を参照してください。
+Keychain参照名の組込みと安全なローダーは用意しています。既存Bot runtimeの排他所有、自動起動・再起動条件と復帰手順は利用者の環境で確認してください。他サービスを巻き込む一括停止は行いません。実秘密読出し・Bot起動・常駐登録、入口や認証サービスの作成、権限変更、plugin接続、実投稿、課金はこのローカル検証に含みません。[Keychain手順](keychain.md)を参照してください。

@@ -1,6 +1,6 @@
 # 最小リリース候補：実装と本接続の境界
 
-2026-10-09。独立Mac作業領域のオフライン候補です。コードは未設定で停止する明示login bootstrap、JWKS network provider、private reader、CLI/常駐テンプレートまで完成しています。実Bot接続・公開・常駐・実dot往復を完了した版ではありません。
+2026-10-09。独立Mac作業領域のオフライン候補です。コードは未設定で停止する明示login bootstrap、JWKS network provider、private reader、CLI/disabled常駐テンプレートを備え、ローカル検証済みです。実環境での設定・受入は残っています。実Bot接続・公開・常駐・実dot往復を完了した版ではありません。
 
 | 境界 | 実装済み・隔離検証済み | 実環境で未実施／未確認 |
 |---|---|---|
@@ -25,7 +25,7 @@ npm run test:loopback
 npm run demo:mock
 ```
 
-119 socket-free casesと25 loopback cases、合計144件です。最新結果は検証記録に記載します。全件は`npm test`でも実行できます。loopbackはliteral127.0.0.1の一時listener・fake issuer/JWKS・fake Discord・署名mock callbackだけを使い、閉じます。sandboxのbind制限がある場合はその試験のローカル実行許可が必要です。demoはin-processでlistenerなし、`liveDiscordPosts:0, liveDotWake:false`です。
+125 socket-free casesと25 loopback cases、合計150件です。最新結果は検証記録に記載します。全件は`npm test`でも実行できます。loopbackはliteral127.0.0.1の一時listener・fake issuer/JWKS・fake Discord・署名mock callbackだけを使い、閉じます。sandboxのbind制限がある場合はその試験のローカル実行許可が必要です。demoはin-processでlistenerなし、`liveDiscordPosts:0, liveDotWake:false`です。
 
 [詳細検証](validation.md)と[独立レビュー](independent-review.md)に根拠を保存しています。独立レビューで見つかったrequest取消し、応答読込上限、SDK応答後の遅延handler追跡・上限を修正し、回帰試験を追加しました。
 

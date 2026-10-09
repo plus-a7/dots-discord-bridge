@@ -1,6 +1,20 @@
 # Offline validation ledger
 
-## 2026-10-09 explicit OAuth / optional Cloudflare — current snapshot
+## 2026-10-10 JST / 2026-10-09 UTC — final local finish, current snapshot
+
+This snapshot covers the offline test and distribution improvements only. It does not establish actual Discord/ChatGPT connectivity, existing service availability, account/resource authorization or exclusive Bot ownership. No actual deployment configuration, Keychain entry, login session or local service diagnostic record is included in this public validation ledger.
+
+Final evidence: **npm test 150/150 PASS, zero failed/skipped/cancelled**, including JS/Swift compilation and 25 literal127.0.0.1 mock listener cases; typecheck PASS; setup checker `offlineReady:true, liveReady:false, sourceLicense:unselected`; demo `liveDiscordPosts:0, liveDotWake:false`. Full tests used authorized local-bind execution; no external test traffic or real native Keychain query. Independent reviewer separately ran typecheck, JS/Swift build, socket-free **125/125 PASS**, setup and demo; it did not rerun the full150.
+
+Added five socket-free integration cases using the actual Gateway normalizer, SQLite file, OAuth verifier, SDK Events/tools, resource ACL and Discord sender with dummy clients/transports. They cover callback acceptance with lost receipt/retry and stable eventID, mock receiver deduplication, persisted subscription/restart and duplicate Gateway input, one same-thread reply with mention suppression, accepted-but-unacknowledged reply remaining uncertain across restart/SDK retry, origin-stop and guild-stop persistence with third-party stop denied, independent subscription/case/authorization expiry causes, and transient500 versus permanent403/404 resource errors and lost send permission. The authorization-expiry case keeps the case within its30-minute lifetime to isolate the failed grant.
+
+The distribution checker reads only bounded canonical public-checkout files; it does not load private configuration, env, credentials or sessions. Its only child probe is `xcrun --find swiftc`, not helper execution. Independent review found an initial alias-boundary issue; the final code rejects parent/leaf symlinks and hardlinks, unexpected package names/path components, inode/dev change across no-follow open, JSON over64KiB and invalidUTF8. One additional setup regression probes root/parent aliases, oversized JSON and unexpected package paths using dummy temp files. Build-presence checks alone do not attest compiled identity or real ACL compatibility. The original source license remains unselected.
+
+README now states local verification/unfinished real connection. [setup.md](setup.md) describes distribution checks; [morning.md](morning.md) separates existing-account test permission from new-access gates and distinguishes Bot→Discord evidence from Discord→actual dot→reply. Public initial commit `931885144d6f220ff2987513ab846124b0e2de8b` was verified read-only on GitHub. The follow-up is compared against that published commit. Public documentation omits personal approval history and local service diagnostics. Dependencies, lockfile, production `src/`, native source and LICENSE are unchanged in this follow-up.
+
+Actual Discord posts, Bot login, actual dot subscription/wake, existing OAuth authorization, official Tunnel readiness/metadata mapping, Keychain ACL, ownership handoff and supervision remain untested here. The prior isolated tests and the additional local tests are not substituted for these results. Existing tokens or account login alone do not prove the new bridge's resource/audience/owner scope is already authorized.
+
+## Previous 144-test explicit OAuth / optional Cloudflare snapshot
 
 Owner approval covered removing the mandatory Cloudflare dependency and implementing explicit authentication separation. Version 2 requires `authentication.kind` (`oauth_resource_server` or `cloudflare_access`) and a separate `http.kind` (`tunnel_loopback` or `forwarded_https`). Disabled/null/old-v1/no-auth/incomplete settings refuse before credential/client/DNS/listener work. No new dependency or authentication service was adopted; exact versions and notices remain unchanged.
 
