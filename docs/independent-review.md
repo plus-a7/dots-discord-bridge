@@ -220,3 +220,11 @@ The independent reviewer found three issues and verified their corrections: setu
 Independent final evidence: `npm run typecheck`, `npm run test:unit` with JS/Swift build, **125/125 socket-free cases PASS, zero failed/skipped**, setup `offlineReady:true, liveReady:false, sourceLicense:unselected`, and demo `liveDiscordPosts:0, liveDotWake:false`. The implementation test run separately recorded final **150/150 full-suite cases PASS, zero failed/skipped/cancelled**, including25 literal-loopback cases. The reviewer did not rerun the full150 or exercise real Discord/Keychain/Tunnel connections. No unresolved blocking finding remained in the isolated scope.
 
 This review does not establish actual IdP/Tunnel availability, account/resource authorization, Bot ownership, live Discord send, actual dot wake or plugin compatibility. An operator must collect those separate acceptance records in the intended environment. Setup success is a local prerequisite check and always reports `liveReady:false`; source repo publication is not deployment or a selected source license.
+
+## Metadata-only setup independent review — 2026-10-09 UTC
+
+Reviewed setup-only configuration, shared OAuth metadata generation, separated config-file reader, CLI lazy production imports, and new socket-free tests. The implementation review independently executed typecheck and JS/Swift build plus **130/130 socket-free cases PASS, zero failed/skipped**, then rechecked all five focused setup cases. Its full-suite evidence is recorded separately in validation.md.
+
+The generated-child module-hook test refuses production Discord/bootstrap/Keychain/JWKS/callback/runtime/MCP imports and SQLite construction. Strict separate configuration, no automatic production fallback, valid-JWT MCP/Events denial, explicit activation, and host-only non-reflecting/non-trusting/non-persistent diagnostics are covered. No blocking code finding remained within this offline scope.
+
+Setup prepares protected-resource metadata and 401 challenges only. It does not establish successful OAuth/plugin registration, actual callback-host acquisition, or dot wake. Production requires a confirmed owner subject, callback host, resource URI and Bot ownership. Public-client none plus PKCE is a candidate to verify with the actual identity-provider plan and client registration flow, not a free-plan guarantee.

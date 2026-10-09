@@ -6,7 +6,7 @@
 
 | 範囲 | 内容 |
 |---|---|
-| ルートの明示ファイル | `.gitignore`, `README.md`, `package.json`, `package-lock.json`, `tsconfig.json`, `LICENSE`, `NOTICE`, `THIRD_PARTY_NOTICES.md`, `config.example.json`, `deployment.example.json`, `deployment.cloudflare.example.json` |
+| ルートの明示ファイル | `.gitignore`, `README.md`, `package.json`, `package-lock.json`, `tsconfig.json`, `LICENSE`, `NOTICE`, `THIRD_PARTY_NOTICES.md`, `config.example.json`, `deployment.example.json`, `deployment.cloudflare.example.json`, `oauth-setup.example.json` |
 | `src/*.ts` | ブリッジ・認証adapter・明示bootstrap/CLI・in-process mock |
 | `test/*.ts` | ダミーID、生成RSA鍵、fake credential/JWKS/Discord/callback fixtureと回帰試験 |
 | `scripts/build-keychain.mjs`, `scripts/check-setup.mjs` | compile-only buildと公開checkout-only setup checker |
@@ -25,4 +25,4 @@ native helperの生成先は `dist/native/` で、元コードとcompile script�
 
 ## 引渡し時の検証
 
-`npm run typecheck`、JS/Swift build、全150 tests（125 socket-free + 25 literal127.0.0.1 loopback）がPASS、失敗・skipは0。`demo:mock`は実投稿0・実dot wake falseです。詳細は [validation.md](validation.md)、最終独立確認は [independent-review.md](independent-review.md)。実秘密読出し、実Bot/Tunnel/IdP/dot接続、外部公開、常駐設定はこの実装検証に含めていません。
+`npm run typecheck`、JS/Swift build、全156 tests（130 socket-free + 26 literal127.0.0.1 loopback）がPASS、失敗・skipは0。`demo:mock`は実投稿0・実dot wake falseです。詳細は [validation.md](validation.md)、最終独立確認は [independent-review.md](independent-review.md)。実秘密読出し、実Bot/Tunnel/IdP/dot接続、外部公開、常駐設定はこの実装検証に含めていません。

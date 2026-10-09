@@ -37,6 +37,8 @@ try {
     if(!regular(relative))return false;const p=json(relative);
     return p.version===2&&p.enabled===false&&p.bridge===null&&p.authentication?.policy===null&&p.http?.port===null&&['exclusiveBotOwnership','ownerIdentity','messageContentIntent'].every(name=>p.confirmations?.[name]===false);
   });
+  const setup=json('oauth-setup.example.json');
+  checks.disabledTemplates=checks.disabledTemplates&&setup.version===1&&setup.mode==='oauth_setup'&&setup.enabled===false&&setup.oauth===null&&setup.http?.kind==='tunnel_loopback'&&setup.http?.port===null;
   if(checks.macOS) {
     const probe=spawnSync('/usr/bin/xcrun',['--find','swiftc'],{cwd:root,env:{PATH:'/usr/bin:/bin'},stdio:'ignore',timeout:5000});
     checks.swiftCompiler=!probe.error&&probe.status===0;

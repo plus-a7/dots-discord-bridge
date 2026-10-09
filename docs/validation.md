@@ -1,5 +1,18 @@
 # Offline validation ledger
 
+
+## Metadata-only OAuth setup follow-up — 2026-10-09 UTC
+
+Final local evidence: **npm test 156/156 PASS, zero failed/skipped/cancelled** (130 socket-free + 26 literal127.0.0.1 mock loopback), typecheck PASS, JS/Swift build PASS, public setup checker offlineReady:true/liveReady:false, mock demo liveDiscordPosts:0/liveDotWake:false. Independent reviewer separately ran typecheck and JS/Swift build plus **130/130 socket-free PASS**; it did not rerun loopback/full156.
+
+Six new tests cover strict setup-only configuration, disabled template and missing activation, production parser rejection, metadata aliases/401 and valid-JWT denial for every MCP/Events method, URL/host/header guards, CLI activation/stop/error non-disclosure, hostname-only non-trusting/no-persistence diagnostics, and a real child-process setup check that forbids production Discord/bootstrap/Keychain/JWKS/callback/MCP imports and SQLite construction. The new loopback case uses only literal127.0.0.1; it sends absent/generated JWTs to setup mode and gets 401 with no tools/Events execution.
+
+The config reader was extracted unchanged to config-file.ts, with deployment reexports preserving the production API. CLI defers production parser/bootstrap imports. OAuth metadata generation is shared between normal authentication and setup, while normal production validation and callback allowlists remain strict. No new dependency, lockfile/native/license change, external setting, credential read, service installation, real Bot/IdP/Tunnel/plugin/subscription/post, or Git push was performed.
+
+The side-effect probe rejects production imports and SQLite construction in setup-check. Setup prepares PRMD/401 only and does not establish OAuth completion, plugin registration, actual callback-host acquisition, or dot wake. Actual callback-host acquisition remains a deployment acceptance gate, documented in oauth-setup.md/morning.md; no dummy or wildcard fills it.
+
+Earlier sections below retain their historical counts and earlier unchanged-source statements; this follow-up changes the specified production source and supersedes the current test count.
+
 ## 2026-10-10 JST / 2026-10-09 UTC — final local finish, current snapshot
 
 This snapshot covers the offline test and distribution improvements only. It does not establish actual Discord/ChatGPT connectivity, existing service availability, account/resource authorization or exclusive Bot ownership. No actual deployment configuration, Keychain entry, login session or local service diagnostic record is included in this public validation ledger.

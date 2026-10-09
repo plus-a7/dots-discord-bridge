@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "mode": "oauth_setup",
+  "enabled": false,
+  "oauth": null,
+  "http": { "kind": "tunnel_loopback", "port": null }
+}

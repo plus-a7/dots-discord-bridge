@@ -12,8 +12,8 @@
     "typecheck": "tsc --noEmit",
     "test": "npm run build && npm run build:keychain && node --test dist/test/*.test.js",
     "demo:mock": "npm run build && node dist/src/mock-runtime.js",
-    "test:unit": "npm run build && npm run build:keychain && node --test dist/test/auth.test.js dist/test/bridge.test.js dist/test/guild.test.js dist/test/recovery.test.js dist/test/jwks.test.js dist/test/deployment.test.js dist/test/keychain.test.js dist/test/oauth.test.js dist/test/integration-recovery.test.js dist/test/setup.test.js",
-    "test:loopback": "npm run build && node --test dist/test/runtime.test.js dist/test/bootstrap.test.js dist/test/oauth-runtime.test.js",
+    "test:unit": "npm run build && npm run build:keychain && node --test dist/test/auth.test.js dist/test/bridge.test.js dist/test/guild.test.js dist/test/recovery.test.js dist/test/jwks.test.js dist/test/deployment.test.js dist/test/keychain.test.js dist/test/oauth.test.js dist/test/integration-recovery.test.js dist/test/setup.test.js dist/test/oauth-setup.test.js",
+    "test:loopback": "npm run build && node --test dist/test/runtime.test.js dist/test/bootstrap.test.js dist/test/oauth-runtime.test.js dist/test/oauth-setup-runtime.test.js",
     "config:check": "npm run build && node dist/src/main.js check --config",
     "setup:check": "node scripts/check-setup.mjs"
   },

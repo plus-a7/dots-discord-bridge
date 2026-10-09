@@ -1,5 +1,7 @@
-import { constants, openSync, closeSync, fstatSync, readSync, lstatSync, realpathSync } from 'node:fs';
-import { isAbsolute, join, normalize, dirname } from 'node:path';
+import { lstatSync } from 'node:fs';
+import { assertPrivateDirectory, readBoundedFile } from './config-file.js';
+export { assertPrivateDirectory, readDeploymentFile } from './config-file.js';
+import { isAbsolute, join, normalize } from 'node:path';
 import { isIP } from 'node:net';
 import { z } from 'zod';
 import { configSchema } from './core.js';
@@ -30,12 +32,6 @@ export function parseDeployment(raw:unknown):Deployment {
     return freeze(p); // No settings/paths/secrets are included in diagnostics.
   } catch {throw new Error('deployment_disabled_or_incomplete');}
 }
-export function assertPrivateDirectory(directory:string) {
-  try {
-    const s=lstatSync(directory);
-    if(!isAbsolute(directory)||realpathSync(directory)!==directory||!s.isDirectory()||s.isSymbolicLink()||s.uid!==process.getuid?.()||(s.mode&0o777)!==0o700)throw new Error('invalid');
-  } catch {throw new Error('private_directory_denied');}
-}
 export function assertPrivateState(path:string) {
   // SQLite opens filenames rather than our O_NOFOLLOW descriptor. Reject
   // existing aliased/foreign leaves, including all fixed auxiliary filenames.
@@ -45,24 +41,9 @@ export function assertPrivateState(path:string) {
     catch(error) {if((error as NodeJS.ErrnoException).code!=='ENOENT')throw new Error('private_state_denied');}
   }
 }
-function readBoundedFile(path:string,privateFile:boolean,maxBytes:number) {
-  let fd:number|undefined;
-  try {
-    if(!isAbsolute(path)||normalize(path)!==path)throw new Error('invalid');
-    fd=openSync(path,constants.O_RDONLY|constants.O_NOFOLLOW|constants.O_NONBLOCK);
-    const s=fstatSync(fd);
-    if(!s.isFile()||s.nlink!==1||s.size>maxBytes||(privateFile&&(s.uid!==process.getuid?.()||(s.mode&0o777)!==0o600)))throw new Error('invalid');
-    const buffer=Buffer.alloc(maxBytes+1);let size=0;
-    while(size<buffer.length){const count=readSync(fd,buffer,size,buffer.length-size,null);if(!count)break;size+=count;}
-    if(size>maxBytes)throw new Error('invalid');return new TextDecoder('utf-8',{fatal:true}).decode(buffer.subarray(0,size));
-  } catch {throw new Error('private_file_denied');}finally {if(fd!==undefined)closeSync(fd);}
-}
 export function readPrivateToken(directory:string) {
   assertPrivateDirectory(directory);
   const token=readBoundedFile(join(directory,'discord-bot.token'),true,512).trim();
   if(!/^[A-Za-z0-9_.-]{32,256}$/.test(token)||token.startsWith('mfa.'))throw new Error('private_file_denied');return token;
-}
-export function readDeploymentFile(path:string,privateFile=true) {
-  try {if(privateFile)assertPrivateDirectory(dirname(path));return JSON.parse(readBoundedFile(path,privateFile,65536)) as unknown;}catch {throw new Error('deployment_file_denied');}
 }
 function freeze<T>(value:T):T {if(value&&typeof value==='object'){for(const child of Object.values(value))freeze(child);Object.freeze(value);}return value;}

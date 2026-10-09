@@ -9,6 +9,16 @@ export function fixedHttpsUrl(raw:string) {
   return u;
 }
 const scope=z.string().regex(/^[\x21\x23-\x5b\x5d-\x7e]{1,128}$/);
+const metadataFields={issuer:z.string().url().max(2048),jwksUrl:z.string().url().max(2048),resource:z.string().url().max(2048),audience:z.string().min(1).max(2048),requiredScopes:z.array(scope).min(1).max(8)};
+export const oauthMetadataPolicySchema=z.object(metadataFields).strict().superRefine((p,ctx)=>{
+  try {fixedHttpsUrl(p.issuer);fixedHttpsUrl(p.jwksUrl);fixedHttpsUrl(p.resource);if(p.audience!==p.resource||new Set(p.requiredScopes).size!==p.requiredScopes.length)throw new Error('invalid');}
+  catch {ctx.addIssue({code:'custom',message:'fixed HTTPS metadata and matching audience required'});}
+});
+export function oauthMetadata(p:z.output<typeof oauthMetadataPolicySchema>) {
+  const pathname=new URL(p.resource).pathname;
+  const path='/.well-known/oauth-protected-resource'+(pathname==='/'?'':pathname);
+  return {path,aliases:['/.well-known/oauth-protected-resource'],body:{resource:p.resource,authorization_servers:[p.issuer],scopes_supported:[...p.requiredScopes],bearer_methods_supported:['header']},url:new URL(path,p.resource).href};
+}
 export const oauthPolicySchema=z.object({...jwtPolicyFields,
   jwksUrl:z.string().url().max(2048),resource:z.string().url().max(2048),
   ownerSubject:z.string().min(1).max(256),requiredScopes:z.array(scope).min(1).max(8),
@@ -29,9 +39,9 @@ export class OAuthResourceAuthenticator extends SignedJwtVerifier implements Req
     const p=oauthPolicySchema.parse(input);
     super(p,provider,now,{kind:'oauth_resource_server',issuer:p.issuer,jwksUrl:p.jwksUrl,resource:p.resource,audience:p.audience,ownerSubject:p.ownerSubject,requiredScopes:[...p.requiredScopes].sort(),principal:p.principal});
     this.oauth=Object.freeze({...p,requiredScopes:Object.freeze([...p.requiredScopes]) as unknown as string[],revokedTokenDigests:Object.freeze([...p.revokedTokenDigests]) as unknown as string[]});
-    const pathname=new URL(p.resource).pathname;
-    this.metadata={path:'/.well-known/oauth-protected-resource'+(pathname==='/'?'':pathname),aliases:['/.well-known/oauth-protected-resource'],body:{resource:p.resource,authorization_servers:[p.issuer],scopes_supported:[...p.requiredScopes],bearer_methods_supported:['header']}};
-    this.metadataUrl=new URL(this.metadata.path,p.resource).href;
+    const metadata=oauthMetadata(p);
+    this.metadata={path:metadata.path,aliases:metadata.aliases,body:metadata.body};
+    this.metadataUrl=metadata.url;
   }
   challenge(request:Request) {return new Response('',{status:401,headers:{'WWW-Authenticate':'Bearer resource_metadata="'+this.metadataUrl+'", scope="'+this.oauth.requiredScopes.join(' ')+'"'+(request.headers.has('authorization')?', error="invalid_token"':''),'Cache-Control':'no-store'}});}
   override assertGrant(grant:AuthorizationGrant|undefined) {

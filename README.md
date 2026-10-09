@@ -2,6 +2,8 @@
 
 このコードは指定guild内の既存権限で閲覧できるチャンネル／案件スレッドと、購読した実際のdot会話をつなぐ最小ブリッジの候補です。別LLM、UI、えるの人格模倣は含みません。既存FF15 Bot/POM/gatewayへの依存・変更はありません。import・build・demoは接続を起動しません。全テストには明示起動する一時127.0.0.1モックHTTP listenerを含み、終了時に閉じます。ここに記録した検証ではBot login、サービス外部公開、トンネル、プラグイン接続、実投稿を行っていません。CLIによる実接続は別の承認・実設定・受入試験が必要です。JWKS取得provider、専用秘密ファイルreader、明示login CLIと未設定LaunchAgentテンプレートは用意しました。実値は未設定・常駐未登録です。配布後のローカル確認は [セットアップ](docs/setup.md)、本人が朝に行う確認は [朝の最小手順](docs/morning.md)、実設定は [接続手順](docs/connect.md) を参照してください。
 
+Bot未接続の初回準備は [OAuth metadataセットアップ](docs/oauth-setup.md) を使います。issuer/resource確定後にowner/callbackなしでmetadata/401だけを提供し、有効JWTでもMCP/Eventsを拒否します。本番への自動切替はありません。
+
 ## 確認した公式仕様と境界
 
 2026-10-07確認、2026-10-09関連仕様を再確認：[OpenAI MCP Events](https://developers.openai.com/plugins/build/mcp-events)、[接続方法](https://developers.openai.com/plugins/deploy/connect-chatgpt)、[Discord Gateway](https://docs.discord.com/developers/events/gateway)、[Discord Threads](https://docs.discord.com/developers/topics/threads)、[公式MCP TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk)。
@@ -25,7 +27,7 @@ Guild内でownerのメンションなし本文を取得するにはMessageConten
 | `src/mcp.ts` | 公式SDK v2のfetch endpoint、専用principal、read/reply toolsとEvents |
 | `src/auth.ts` / `src/oauth.ts` / `src/auth-factory.ts` | 明示認証factory、Access JWTまたは固定OAuth access token検証、requestごとのgrantと購読失効 |
 | `src/jwks.ts` | 設定で固定したissuer/JWKSへのHTTPS GET、IPv4/DNS pin、raw上限・timeout/abort・失敗cooldown |
-| `src/deployment.ts` / `src/bootstrap.ts` | disabled設定拒否、private reader、Bot所有lock、有限login/ready、実identity確認後だけruntime開始 |
+| `src/config-file.ts` / `src/deployment.ts` / `src/bootstrap.ts` | disabled設定拒否、private reader、Bot所有lock、有限login/ready、実identity確認後だけruntime開始 |
 | `src/keychain.ts` / `native/keychain-reader.swift` | login Keychain完全一致参照、UI禁止、専用fd 3 pipe、秘密非ログ/非ファイル、時間/出力上限 |
 | `src/cli.ts` / `src/main.ts` | 静的check、明示activateのrun、SIGINT/SIGTERMと自身process終了 |
 | `deployment*.example.json` / `deploy/*.plist.example` | 値未入力・disabledの設定／Mac常駐テンプレート |
@@ -65,7 +67,7 @@ npm test
 npm run demo:mock
 ```
 
-依存の取得以外、外部通信は不要です。`npm test`は150件、`npm run test:unit`はsocketなし125件、`npm run test:loopback`は一時127.0.0.1 listenerを使う25件です。sandboxでbindが禁止される環境ではloopback試験だけローカルlistenerの実行許可が必要です。testは実際の公式MCP v2 SDKをRequest/Responseで通し、モックcallbackが署名を検証し、モックDiscordへ返信します。fixtureからの手動tool呼出しはdotの代替LLMではなく、プロトコルの検証です。テスト用ID・会話はすべてダミーで、実データを取り込みません。
+依存の取得以外、外部通信は不要です。`npm test`は156件、`npm run test:unit`はsocketなし130件、`npm run test:loopback`は一時127.0.0.1 listenerを使う26件です。sandboxでbindが禁止される環境ではloopback試験だけローカルlistenerの実行許可が必要です。testは実際の公式MCP v2 SDKをRequest/Responseで通し、モックcallbackが署名を検証し、モックDiscordへ返信します。fixtureからの手動tool呼出しはdotの代替LLMではなく、プロトコルの検証です。テスト用ID・会話はすべてダミーで、実データを取り込みません。
 
 `demo:mock` は資格情報・環境変数を読まず、HTTP listenerも作りません。認証なしのRequest/Responseを同一プロセスで公式SDKへ渡し、署名確認済みのモックEventsとread/replyを手動で通します。実dotの代役はありません。出力は `mockOnly:true, liveDiscordPosts:0, liveDotWake:false` です。認証なしの公開endpointは提供していません。
 
@@ -97,7 +99,7 @@ callbackは明示した完全一致hostだけを許可し、HTTPS/443、userinfo
 
 1. owner/Botの実IDを本接続時に再確認。指定guild・全閲覧可能channelという希望はprivate候補に反映済みですが、既存権限だけを使います。公開exampleに実IDを入れていません。
 2. Botの接続所有者を選ぶ。既存Hermes Botの排他的切替ならHermes全Gatewayと監督の停止・復帰承認が必要です。既存gatewayを一切変えないなら専用Bot／資格情報の別承認が必要です。同じBot資格情報で並行受信する案は採用しません。FF15は対象外。
-3. Keychain参照の組込みは本人承認済みでdisabledテンプレートへ反映。実読出し/ACL/常駐セッションは未試験。private設定、MessageContentIntentの現在設定と必要な利用権限を確認。値を会話・ソース・ログへ表示／コピーしません。既存channel/OS権限を勝手に拡張しません。
+3. Keychain参照はdisabledテンプレートへ反映。実読出し/ACL/常駐セッションは未試験。private設定、MessageContentIntentの現在設定と必要な利用権限を確認。値を会話・ソース・ログへ表示／コピーしません。既存channel/OS権限を勝手に拡張しません。
 4. [接続候補比較](docs/connection-options.md)のHTTPSまたはSecure MCP Tunnel、アクセス認証、専用principal/chat束縛を選び、その費用・既存契約・追加権限が許容範囲内か確認。Tunnelは未作成・未接続です。標準OAuth経路も実IdPへの適合と実resource/audienceの確認が必要です。
 5. 選択後、実装済みのprivate token reader/JWKS provider/login bootstrapへ承認済みの実値を設定する。callback host、プラグイン接続、実際の「える」会話の永続購読、常駐/rollbackを承認。
 6. 対象guildの既存テスト用thread、専用経路・認証・排他的Bot所有を確認した後、利用者の許可内でGateway受信→署名callback→当該dot wake→read/reply→同じthread返信を実測する。新OAuth grant、永続アクセス、課金、入口の新設や既存runtimeの恒久停止は、それぞれ個別に判断する。

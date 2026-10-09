@@ -2,7 +2,20 @@
 
 ローカルコード検証は完了しています。実Discord/ChatGPTの往復は未確認です。以下は利用者の既存権限と認証の範囲で、限定疎通を行うための手順です。新しい認証・権限・契約や既存runtimeの変更を許可する文書ではありません。
 
-## 最初に確認する3点
+## 初回導入の確認順序
+
+アカウント準備、API/client作成、OAuth grant、永続設定、外部公開は、それぞれ対象と権限を確認して進めます。アカウントの登録だけで後続のアクセス作成が許可されたとは判断しません。
+
+1. 対象workspaceの専用Secure MCP Tunnel利用可否・権限・追加費用を読取確認し、なければ専用HTTPS forwardingを選ぶ。Cloudflareは任意。既存サービスやhealth-only gatewayへ混載しない。
+2. 実clientのresource URIを確定してからAuth0 API Identifier、RFC 9068/RS256、scope、resource互換/issuer response、PKCE S256の設定承認をまとめる。Identifierは作成後変更不可。issuer/JWKSは実discoveryから取得し、無料枠のCIMD/private_key_jwt適合を仮定しない。
+3. 必要な設定保存と手動loopback待受けの承認後、別のoauth_setup設定でsetup-check → setup-serveを使い、Botへログインせずprotected-resource metadata/401を確認する。owner/callback未設定でもこの準備だけ可能。read/reply・MCP discovery・Eventsは全無効で、有効JWTでも401。AS discoveryはAuth0自身が配信する。
+4. 実ChatGPT管理画面から正確なOAuth redirect URI/client情報を取得し、本人の専用テナントのエンドユーザーsubjectを確認する。管理者アカウントやDiscord IDから推測しない。setupだけでChatGPT登録/OAuth完了できるとは未検証で、UIが認証済みMCP scanを要求する場合は本番設定完成まで止める。
+5. 実Events callback hostnameを利用者の接続環境で秘密を渡さず確認する。取得経路は未確認で、管理画面に表示されると断定しない。setup-callback-checkへhostnameだけを渡す。syntax成功もtrusted:falseで、保存/自動許可/DNSなし。OAuth redirect/MCP hostの流用不可。取得・確認できなければ本接続前に止める。
+6. setup待受けを停止し、確認済みowner/callbackと下記Bot条件を本番version 2へ設定してcheck → activate → 限定受入へ進む。自動昇格せず、同じportへ二重起動しない。
+
+詳細は [oauth-setup.md](oauth-setup.md)。metadata準備のBot依存は解消しましたが、実callbackの取得確認や新アクセス操作は利用者の環境で確認する必要があります。認証・transportの確定を先延ばしせず、未確認値の自動信頼で回避しません。
+
+## 本番起動前に確認する3点
 
 1. **専用MCP接続・認証を確認する。** ログイン済みの設定とサービス仕様でbridge用の接続を確認し、issuer/discovery URL、access-token形式、resource/audience、owner subject、scope、専用principal/chat束縛を照合する。health-only接続は別機能の利用証拠にならない。設定値や秘密を公開文書へ転記しない。
 2. **Bot所有とテスト先を確認する。** 本人・Bot・guildを実UIで照合し、既存テスト用channel/threadを選ぶ。MessageContentIntentと既存閲覧/送信権限、既存runtimeの自動起動・再起動条件と排他所有を確認する。共有leaseに参加しないruntimeとの二重loginを行わない。
@@ -28,6 +41,6 @@
 
 ## ローカル検証の範囲
 
-150 tests（125 socket-free + 25 loopback）、型検査・JS/Swift build、setup checker、mock demoを検証しました。追加統合は実Gateway正規化・SQLite・OAuth・公式SDK・resource ACL・Discord senderを使い、callback応答喪失の再送、再起動、uncertain返信の再投稿防止、owner停止、期限、403/404と一時障害をfake transportだけで確認します。実ネットワーク疎通の証拠ではありません。[validation.md](validation.md)
+156 tests（130 socket-free + 26 loopback）、型検査・JS/Swift build、setup checker、mock demoを検証しました。追加統合は実Gateway正規化・SQLite・OAuth・公式SDK・resource ACL・Discord senderを使い、callback応答喪失の再送、再起動、uncertain返信の再投稿防止、owner停止、期限、403/404と一時障害をfake transportだけで確認します。実ネットワーク疎通の証拠ではありません。[validation.md](validation.md)
 
 実IdP/専用入口・対応resource、実設定、テスト先/本人/権限、排他的所有と許可範囲は利用者の環境で確認してください。新規契約や鍵発行が不要と判断できる証拠が得られるまでは、それらを開始しません。

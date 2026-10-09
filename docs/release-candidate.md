@@ -25,7 +25,7 @@ npm run test:loopback
 npm run demo:mock
 ```
 
-125 socket-free casesと25 loopback cases、合計150件です。最新結果は検証記録に記載します。全件は`npm test`でも実行できます。loopbackはliteral127.0.0.1の一時listener・fake issuer/JWKS・fake Discord・署名mock callbackだけを使い、閉じます。sandboxのbind制限がある場合はその試験のローカル実行許可が必要です。demoはin-processでlistenerなし、`liveDiscordPosts:0, liveDotWake:false`です。
+130 socket-free casesと26 loopback cases、合計156件です。最新結果は検証記録に記載します。全件は`npm test`でも実行できます。loopbackはliteral127.0.0.1の一時listener・fake issuer/JWKS・fake Discord・署名mock callbackだけを使い、閉じます。sandboxのbind制限がある場合はその試験のローカル実行許可が必要です。demoはin-processでlistenerなし、`liveDiscordPosts:0, liveDotWake:false`です。
 
 [詳細検証](validation.md)と[独立レビュー](independent-review.md)に根拠を保存しています。独立レビューで見つかったrequest取消し、応答読込上限、SDK応答後の遅延handler追跡・上限を修正し、回帰試験を追加しました。
 

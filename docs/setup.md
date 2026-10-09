@@ -21,7 +21,7 @@ npm run demo:mock
 
 期待する結果は `offlineReady:true, liveReady:false, sourceLicense:"unselected"` です。exit 2ならJSON内のfalse項目を確認し、不足したローカル手順だけを行います。root package/依存parentのaliasや想定外package名も拒否します。checker自身はインストール・コンパイル・設定変更をしません。実接続可否や秘密の有効性を成功扱いするチェックではありません。
 
-`test:unit` は125件のsocket-free検証、`test:loopback` は25件のliteral127.0.0.1一時listener検証です。全体150件は `npm test` でも実行できます。sandboxがbindを拒否する場合は一時loopback実行だけを許可する必要があります。外部公開や実Discord接続の許可と混同しません。macOS以外では現Swift build/scriptは対応外として停止します。
+`test:unit` は130件のsocket-free検証、`test:loopback` は26件のliteral127.0.0.1一時listener検証です。全体156件は `npm test` でも実行できます。sandboxがbindを拒否する場合は一時loopback実行だけを許可する必要があります。外部公開や実Discord接続の許可と混同しません。macOS以外では現Swift build/scriptは対応外として停止します。
 
 ## 設定テンプレートの確認
 
@@ -40,3 +40,7 @@ node dist/src/main.js check --config /absolute/path/to/checkout/deployment.examp
 ## 本接続前
 
 利用者が許可した既存ログイン・既存Botの範囲で限定疎通を行います。新IdPアカウント・OAuth grant・新token・永続アクセス・セキュリティ設定・課金・入口新設・既存runtimeの恒久停止は個別に判断してください。使える既存の専用接続を確認できなければ、その不足で止めます。health-only gatewayの成功を別機能の許可と解釈せず、既存serviceへ混載しません。[朝の手順](morning.md)に残る確認と実測証拠をまとめています。
+
+## Bot未接続のmetadata準備
+
+新しいoauth_setup設定とsetup-check/setup-serve/setup-callback-checkは [oauth-setup.md](oauth-setup.md) を参照してください。本番設定と分離し、owner/callback未確認ではread/reply・MCP discovery・Eventsを全拒否します。静的checkの成功は実IdPの適合や接続成功を示しません。
