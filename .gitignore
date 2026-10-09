@@ -1,0 +1,10 @@
+node_modules/
+dist/
+private/
+*.sqlite*
+.env*
+!.env.example
+deployment.json
+*.token
+*.log
+deploy/*.plist

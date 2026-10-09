@@ -1,0 +1,11 @@
+Discord dot bridge — offline prototype; original source license unselected.
+Original code is separate from private configuration, credentials and conversation data.
+Third-party dependencies are not relicensed. The exact installed versions,
+license declarations and shipped notices are recorded in THIRD_PARTY_NOTICES.md.
+Three installed packages omit license text in their npm package: @sapphire/async-queue,
+@sapphire/snowflake and standardwebhooks. Matching release-commit MIT texts and
+copyright notices are preserved under docs/licenses/, with source URLs and
+SHA-256 digests in upstream-mit-provenance.json. Public source licensing remains
+unselected; distribution and a complete release notice check remain separate.
+This implementation task did not create or push a repository. The separately
+authorized publication task is responsible for repository staging and release.

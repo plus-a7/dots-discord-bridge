@@ -1,0 +1,16 @@
+{
+  "ownerUserId": "100000000000000001",
+  "bridgeBotId": "100000000000000002",
+  "principal": "dedicated-owner-dot-connection",
+  "cases": [],
+  "allowedUsers": [],
+  "allowedBots": [],
+  "maxReplies": 8,
+  "maxCaseMs": 1800000,
+  "replyTimeoutMs": 10000,
+  "maxRecords": 1000,
+  "mode": "guild_owner",
+  "guildId": "100000000000000003",
+  "maxOrigins": 100,
+  "maxSubscriptions": 32
+}

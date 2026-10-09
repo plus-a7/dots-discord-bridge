@@ -1,0 +1,29 @@
+{
+  "name": "discord-dot-bridge",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.20.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "build:keychain": "node scripts/build-keychain.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "npm run build && npm run build:keychain && node --test dist/test/*.test.js",
+    "demo:mock": "npm run build && node dist/src/mock-runtime.js",
+    "test:unit": "npm run build && npm run build:keychain && node --test dist/test/auth.test.js dist/test/bridge.test.js dist/test/guild.test.js dist/test/recovery.test.js dist/test/jwks.test.js dist/test/deployment.test.js dist/test/keychain.test.js dist/test/oauth.test.js",
+    "test:loopback": "npm run build && node --test dist/test/runtime.test.js dist/test/bootstrap.test.js dist/test/oauth-runtime.test.js",
+    "config:check": "npm run build && node dist/src/main.js check --config"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/server": "2.3.1",
+    "discord.js": "14.27.0",
+    "standardwebhooks": "1.1.1",
+    "zod": "4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.4",
+    "typescript": "7.0.2"
+  }
+}

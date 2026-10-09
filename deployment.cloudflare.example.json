@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "enabled": false,
+  "confirmations": {
+    "exclusiveBotOwnership": false,
+    "ownerIdentity": false,
+    "messageContentIntent": false
+  },
+  "bridge": null,
+  "credential": {
+    "kind": "keychain",
+    "service": "DOTS_DISCORD_BOT",
+    "account": "discord",
+    "timeoutMs": 2000
+  },
+  "privateDirectory": null,
+  "ownershipDirectory": null,
+  "callbackHosts": [],
+  "loginTimeoutMs": 15000,
+  "drainTimeoutMs": 10000,
+  "authentication": {
+    "kind": "cloudflare_access",
+    "policy": null
+  },
+  "http": {
+    "kind": "forwarded_https",
+    "host": null,
+    "port": null
+  }
+}
