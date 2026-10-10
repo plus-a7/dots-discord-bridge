@@ -162,3 +162,11 @@ The diagnostics tests cover synthetic Keychain classifications, client/guardian 
 Actual saved-key validity, official Control Plane authentication/readiness, resource mapping/display, OAuth compatibility and dot/Discord acceptance remain unverified. Local readiness and credential handoff diagnostics do not establish those outcomes. Source/license/dependency snapshots remain separate from private settings and binaries.
 
 Public checkout verification of this correction: typecheck, JS/Python syntax, production Swift compilation, existing156, mock13 and official configuration1 all PASS, zero failed/skipped/cancelled. Public setup remains offlineReady:true/liveReady:false and demo remains liveDiscordPosts:0/liveDotWake:false. This run used no real key, private profile or live service.
+
+## Operator launcher UX — 2026-10-10 UTC
+
+The generic generator, keyless preflight and thin operator launcher add a double-click/Enter path through the existing metadata-only command. Preparation creates owner700 private wrappers without starting them. TTY/Enter are interaction guards, not proof of human identity. The launcher explains saved-key use and destination before confirmation, preserves the FD4/TTY/15-minute controls, uses existing socket stop, and retains fixed results on failure/cancel/end. No retry, supervisor, new grant or persistent permission is added.
+
+The separate UX suite contains7 cases covering preflight/confirmation order, cancel/EOF/signals/bounds, secret non-reflection, socket stop, lock/schema/port refusal, absolute shell quoting, and mock Mac PTY start/stop/duplicate/cancel/helper failure/missing script/import failure. These tests use synthetic fixtures; no actual Terminal app, Keychain, generated production wrapper or live service is operated. Finder association/launch and actual saved-key authentication/readiness/OAuth/dot wake/Discord reply require separate acceptance evidence.
+
+Public checkout verification: typecheck, JS syntax, production Swift compilation, existing **156/156**, separate mock **13/13**, UX **7/7**, and official offline configuration **1/1** all PASS, zero failed/skipped/cancelled. Setup reports offlineReady:true/liveReady:false; demo reports liveDiscordPosts:0/liveDotWake:false. No actual key, private profile or live service was used.

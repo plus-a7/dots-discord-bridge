@@ -13,6 +13,7 @@
 | `native/keychain-reader.swift` | helperの元コードのみ |
 | `native/tunnel-keychain-launcher.swift`, `test/tunnel-metadata.test.mjs`, `test/tunnel-client-pipe.test.mjs` | 手動metadata-only helperの元コードと合成キーmock試験 |
 | `scripts/build-tunnel-keychain.mjs`, `scripts/tunnel-plan.mjs`, `scripts/prepare-tunnel-metadata.mjs`, `scripts/tunnel-session-core.mjs`, `scripts/tunnel-metadata.mjs`, `scripts/tunnel-diagnostics.mjs`, `scripts/check-tunnel-client-pipe.py` | compile・private準備・hash確認・本人開始/停止。実ID・キーは含まない |
+| `scripts/prepare-tunnel-launchers.mjs`, `scripts/tunnel-launcher.mjs`, `scripts/tunnel-preflight.mjs`, `test/tunnel-launcher.test.mjs` | 汎用generator・Enter確認・キーなしpreflight・テスト専用PTY fixture。生成されたprivate個人パス入り.commandは除外 |
 | `deploy/local.discord-dot-bridge.plist.example` | 未設定・disabled・未登録テンプレート |
 | `docs/*.md` | 現行手順、履歴、検証・レビュー、公開範囲 |
 | `docs/licenses/` | 採用依存版のLICENSE/NOTICE写し、inventory/provenanceの非秘密記録 |
@@ -28,3 +29,7 @@ native helperの生成先は `dist/native/` で、元コードとcompile script�
 ## 引渡し時の検証
 
 `npm run typecheck`、JS/Swift build、全156 tests（130 socket-free + 26 literal127.0.0.1 loopback）がPASS、失敗・skipは0。`demo:mock`は実投稿0・実dot wake falseです。詳細は [validation.md](validation.md)、最終独立確認は [independent-review.md](independent-review.md)。実秘密読出し、実Bot/Tunnel/IdP/dot接続、外部公開、常駐設定はこの実装検証に含めていません。
+
+起動UXの追加試験は7件です。生成private.commandは個人の絶対pathを含むため公開せず、generic generatorとモックPTYコードだけを含めます。Finder関連付け・本番起動・実認証の動作は未検証です。
+
+公開コピーで型・必要なSwift build・既存156/156・mock13/13・UX7/7・公式offline設定1/1を再検証し、全PASS・失敗/skip/cancel0。setupはofflineReady:true/liveReady:false、demoは実投稿0・実dot wake falseです。

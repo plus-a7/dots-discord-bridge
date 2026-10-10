@@ -12,6 +12,8 @@
     "build:tunnel-helper": "node scripts/build-tunnel-keychain.mjs",
     "test:tunnel-metadata": "npm run build && node --test test/tunnel-metadata.test.mjs",
     "test:tunnel-client-config": "npm run build && node --test test/tunnel-client-pipe.test.mjs",
+    "test:tunnel-launchers": "npm run build && node --test test/tunnel-launcher.test.mjs",
+    "build:tunnel-launchers": "npm run build && node scripts/prepare-tunnel-launchers.mjs",
     "tunnel:check": "node scripts/tunnel-metadata.mjs --check",
     "tunnel:start": "node scripts/tunnel-metadata.mjs --start --person-start",
     "tunnel:stop": "node scripts/tunnel-metadata.mjs --stop",

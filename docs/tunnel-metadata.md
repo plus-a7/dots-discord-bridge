@@ -32,6 +32,16 @@ node scripts/tunnel-metadata.mjs --check
 
 `https://tunnel-bootstrap.invalid/mcp`は診断だけの暫定resourceです。Auth0 API Identifierや本番audienceへ登録してはいけません。実clientが使うresourceを確認してから別途Auth0設定をレビューします。Tunnel ID、ローカルURL、hostから推測しません。
 
+## 本人用の起動・停止ファイル
+
+本人用の`private/tunnel-metadata/launchers/Start Metadata.command`をFinderから開きます。runtime keyをlogin Keychainから読み、OpenAI control plane（`https://api.openai.com`）へ送る説明が表示されます。キーなしpreflightに通った場合だけEnterを1回押して開始します。Keychainの許可ダイアログが出た場合の操作は本人に残ります。取消は開始前にCtrl-C、または文字を入力してEnterです。キーや署名URLを貼らないでください。終了後は固定診断を画面に残し、閉じるときだけもう一度Enterを押します。失敗時に自動retryしません。
+
+停止は`Stop Metadata.command`を開くか開始画面でCtrl-Cです。停止ファイルは既存socketへ停止を要求し、PID単独killは行いません。「停止受付」は完了の証明ではなく、開始画面の「停止完了」で確認します。「開始受付」や「ローカルready」も認証・OAuth・dot wake成功ではありません。最大15分、metadata-only401、既存TTYガードとFD4単一参照の経路を維持します。
+
+TTY/Enterは本人性を証明しません。エージェントは本番wrapperを起動せず、Terminalアプリの読取り・自動操作や安全拒否の迂回も行いません。Finder関連付け・OS起動制限の実GUI動作は未試験です。OSが拒否した場合にセキュリティ設定を変更する手順は含みません。
+
+公開用generatorは`scripts/prepare-tunnel-launchers.mjs`です。`npm run build:tunnel-launchers`で検証済みplanのNode絶対pathを使うowner700ファイルを新規生成します。`.command`は環境をHOME/PATHに限定し、引数override・秘密読取り・AppleScriptを含みません。privateの個人パス入りwrapperは公開除外です。既存フォルダへの上書きや自動再生成は拒否します。キーなし`node scripts/tunnel-metadata.mjs --preflight`はhash/設定/lock・schema・専用43125/43126のport状態だけを確認し、native helper・Keychain・HTTP listener・外部通信を開始しません。port確認はsnapshotなので、本開始時の既存lock/port/listener確認も再実行します。
+
 ## キーの経路と手動開始
 
 利用者がMac Terminalで明示開始したときだけ、native helperがlogin Keychainを参照名の完全一致で検索します。認証ダイアログは利用者が要求元を確認して許可またはキャンセルし、ACL恒久変更・キー再発行は自動実行しません。
@@ -83,3 +93,7 @@ FD3はparent生存/停止と固定診断の双方向経路です。ASCII allowli
 | `metadata_listener_stopped/session_lock_released/session_stopped` | owned listener/lockを片付けた。pending/failedはレビュー対象 |
 
 health確認は明示start時だけです。固定127.0.0.1:43126のlistener PIDをclient PIDと照合した後、healthz/readyzへ認証headerなしGETを行います。1 request最大1秒、redirect拒否、body/header破棄でstatusだけ分類します。PID照合はOSの同時変更に対する原子的証明ではありません。残り起動期限によるabort/raceと前後deadline確認で、late-readyやabortを無視するprobeから期限後の成功を出しません。
+
+## 起動wrapperのキーなし検証
+
+`npm run test:tunnel-launchers`は別途7件です。説明/preflight/Enter/startの順序、取消/EOF/signal/入力上限、固定エラー・秘密非表示、既存socket停止と受理/完了区別、lock/schema/port拒否、shell path引用を検証します。Mac PTYでは専用fixtureだけを使い、起動→socket停止、二重開始拒否、取消、mock helper失敗、起動ファイル欠落・module import失敗の固定表示と画面保持を確認します。実Terminalアプリ・本番wrapper・Keychain・公式clientを起動せず、実キーを使いません。これはFinderでの実GUIや実認証の証明ではありません。

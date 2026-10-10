@@ -75,6 +75,8 @@ npm run demo:mock
 
 追加のTunnel準備試験は`npm run test:tunnel-metadata`で別途実行します（13件、mock-only）。`npm test`の156件には含まれません。Swift compiler、Python3、一時Unix/127.0.0.1 socketが必要です。実Keychainや実client接続を行いません。`npm run test:tunnel-client-config`は別の1件で、固定版公式binaryへ合成キーを渡し、全ネットワーク禁止・runtime構築前の設定エラーで二重読込みの再現と修正を確認します。
 
+本人用の薄い`.command`起動・停止wrapperは`npm run build:tunnel-launchers`でprivate領域へ生成します。実キーを使わない準備だけで、生成時には起動しません。開始ファイルを開き、送信先の説明とpreflight結果を確認してEnterを1回押すと既存の一時metadata-only経路へ進みます。TTY/Enterは本人性の証明ではなく、エージェントは最終起動を代行しません。`npm run test:tunnel-launchers`は別途7件、Macのテスト専用PTY・fake helper・Unix socketで検証します。Terminalアプリ・Keychain・実Tunnelを操作しません。
+
 再現結果と未試験項目は [検証記録](docs/validation.md)、独立レビューは [レビュー記録](docs/independent-review.md) に記録します。実装済みコード・残る実設定と接続承認は [最小リリース候補](docs/release-candidate.md)、導入順序・最小権限・rollbackと実dot受入判定は [導入手順](docs/operations.md) にまとめました。
 
 ## 永続化・再送・停止

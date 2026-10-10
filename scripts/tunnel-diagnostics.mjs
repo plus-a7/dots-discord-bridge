@@ -44,8 +44,8 @@ export function validateClientProfile(client,profile,runDirectory,invoke=spawnSy
 }
 export function listenerOwner(port,invoke=spawnSync) {
  // Fixed port only; never request argv/environment or unrelated process listings.
- if(port!==43126)return 'unknown';
- const result=invoke('/usr/sbin/lsof',['-nP','-iTCP:43126','-sTCP:LISTEN','-Fp'],{env:cleanEnvironment(),encoding:'ascii',timeout:1000,maxBuffer:4096,stdio:['ignore','pipe','ignore']});
+ if(port!==43125&&port!==43126)return 'unknown';
+ const result=invoke('/usr/sbin/lsof',['-nP','-iTCP:'+port,'-sTCP:LISTEN','-Fp'],{env:cleanEnvironment(),encoding:'ascii',timeout:1000,maxBuffer:4096,stdio:['ignore','pipe','ignore']});
  if(result.error)return 'unknown';
  if(result.status===1&&result.stdout==='')return 'absent';
  if(result.status!==0)return 'unknown';
