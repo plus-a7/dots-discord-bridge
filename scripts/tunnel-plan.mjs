@@ -23,7 +23,6 @@ control_plane:
   base_url: https://api.openai.com
   tunnel_id: ${p.tunnelId}
   organization_id: ${p.organizationId}
-  api_key: file:/dev/fd/4
   max_inflight_requests: 1
   poll_timeout: 10s
   poll_channels: [main, harpoon]

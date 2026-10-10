@@ -13,7 +13,7 @@
 
 client pathは`/opt/homebrew/Cellar/tunnel-client/0.0.16/libexec/tunnel-client`へ固定します。別版・別platform・別binary hashは拒否されるため、移設や更新後は対応版とpinsを再レビューしてください。client/cloudflared binaryは同梱しません。[LICENSE/NOTICE/SBOM](../THIRD_PARTY_NOTICES.md)は参照版の写しで、Homebrew生成SBOMは完全なbinary再配布監査ではありません。
 
-[公式Tunnel](https://developers.openai.com/api/docs/guides/secure-mcp-tunnels)、[OAuth](https://developers.openai.com/plugins/build/auth)、[client 0.0.16 source](https://github.com/openai/tunnel-client/tree/v0.0.16)を参照してください。sourceの`file:`入力対応と、実clientによるFD4利用の実測は区別します。
+[公式Tunnel](https://developers.openai.com/api/docs/guides/secure-mcp-tunnels)、[OAuth](https://developers.openai.com/plugins/build/auth)、[client 0.0.16 source](https://github.com/openai/tunnel-client/tree/v0.0.16)を参照してください。固定版公式binaryによるFD4読込みは合成キー・全ネットワーク禁止の設定回帰で確認します。これは実キーの認証・readinessの証明ではありません。
 
 ## 公開テンプレートの準備
 
@@ -40,7 +40,7 @@ node scripts/tunnel-metadata.mjs --check
 node scripts/tunnel-metadata.mjs --start --person-start
 ```
 
-準備時と同じNodeを使います。非TTY・追加引数・環境経由のclient/helper overrideは拒否します。開始するとruntimeキーがOpenAI control planeへ送られます。キーはnative helperからOS pipe FD4を通してclientへ渡し、Node、argv、環境、設定、stdout/stderrへ値を渡しません。client引数は`file:/dev/fd/4`、child出力は破棄し、logは`/dev/null`、payload capture/raw HTTP logは無効です。同UID/管理者によるメモリ検査からの保護は別の境界です。
+準備時と同じNodeを使います。非TTY・追加引数・環境経由のclient/helper overrideは拒否します。開始するとruntimeキーがOpenAI control planeへ送られます。キーはnative helperからOS pipe FD4を通してclientへ渡し、Node、argv、環境、設定、stdout/stderrへ値を渡しません。参照はCLIの`--control-plane.api-key file:/dev/fd/4`一箇所だけです。YAMLに`api_key`を置きません。child出力は破棄し、logは`/dev/null`、payload capture/raw HTTP logは無効です。同UID/管理者によるメモリ検査からの保護は別の境界です。
 
 常駐登録や自動再起動はなく、最大15分で停止します。`metadata_only_session_started`はhelper起動要求だけで、キー取得・readiness・OAuth・dot wake成功ではありません。
 
@@ -58,4 +58,28 @@ node scripts/tunnel-metadata.mjs --stop
 
 残るKeychainダイアログは利用者がキャンセルします。`metadata_stop_pending`やstale lockがある場合はlock削除・再起動前に固定診断で状態をレビューします。別Tunnelや既存Botは停止しません。
 
-`npm run test:tunnel-metadata`は別のTUNNEL_MOCK helperと合成キー・mock client、一時Unix/127.0.0.1 socketだけを使う6件です。既存156件とは別です。Swift、Python3が必要です。FD4/非露出、失敗・timeout・競合cleanup、parent死亡、metadata GET/MCP・Events 401、CLI拒否、SIGHUP/分割停止応答を確認します。実Keychain・実clientのFD4読込み/認証/readiness、metadata書換え、resource表示、Auth0/JWT適合、dot購読/wake/Discord返信は別の受入試験です。
+`npm run test:tunnel-metadata`は別のTUNNEL_MOCK helperと合成キー・mock client、一時Unix/127.0.0.1 socketだけを使う13件です。既存156件とは別です。Swift、Python3が必要です。FD4/非露出、失敗・timeout・競合cleanup、parent死亡、metadata GET/MCP・Events 401、CLI拒否、SIGHUP/分割停止応答を確認します。実Keychain・実clientのFD4読込み/認証/readiness、metadata書換え、resource表示、Auth0/JWT適合、dot購読/wake/Discord返信は別の受入試験です。
+
+## FD4二重読込みの修正と固定診断
+
+0.0.16はCLI overrideがあってもYAMLのAPIKey参照を先に解決し、続いてCLIの参照を解決します。消費型FD4 pipeを両方へ指定すると二度目が空になりexit1になります。profileからYAMLの`api_key`を削除し、native CLI一箇所だけへ指定します。schema-onlyのprofiles add成功だけでは、この実行時読込みを検証できません。
+
+`npm run test:tunnel-client-config`は固定hashの公式0.0.16 binaryを、合成キーとdummy設定だけで二回実行します。追加sandboxで全networkを禁止し、`mcp.max-concurrent-requests=0`を設定解析後のsentinelにします。旧二重参照は`api_key_pipe_empty`、修正版は`intentional_post_key_config_sentinel`まで進むことを確認します。両clientのexit1は試験で意図した設定拒否で、harnessのexit0が成功です。runtimeは構築しません。stderrは8KiB以内のメモリだけで分類し、完全一致の2メッセージを固定名へ変換して、未知内容は破棄します。私的設定やKeychainを読みません。
+
+FD3はparent生存/停止と固定診断の双方向経路です。ASCII allowlist、1行96bytes、合計4096bytes、64行で制限し、未知・秘密・state・長大入力を反射しません。nativeの診断writeはnonblocking/best effortでcleanupを妨げません。生stdout/stderr、例外stack、HTTP body/header、URL/token/stateは記録しません。
+
+| 診断 | 意味 |
+|---|---|
+| `metadata_command_denied_stage_arguments/terminal/static_plan` | 引数・TTY・private planで拒否。Keychain前 |
+| `tunnel_helper_reference_unconfigured` | 公開テンプレート参照名が未設定。Keychain前 |
+| `metadata_client_config_check_passed` / `metadata_client_config_schema_only_not_runtime_or_auth` | オフラインschema確認のみ。実行・認証の成功ではない |
+| `metadata_client_config_rejected/spawn_or_timeout` | schema拒否、validator起動失敗またはtimeout |
+| `metadata_start_failed_stage_metadata_listener` | metadata待受けの失敗 |
+| `tunnel_keychain_open/lookup_failed_<分類>` | 既知OSStatusだけの固定分類。生errorは出さない |
+| `tunnel_keychain_lookup_complete` / `tunnel_credential_handoff_complete` | Data取得・FD4 write段階。client認証とは別 |
+| `tunnel_client_exit_code_<整数>` / `tunnel_client_exit_signal_<整数>` | client終了。guardian終了の診断とは別 |
+| `metadata_client_health_timeout` | handoff後30秒以内にlocal readinessを確認できずcleanup |
+| `metadata_client_local_ready_does_not_prove_auth_or_dot_wake` | 同一PIDのlocal healthが200。Control Plane認証、OAuth、dot wakeとは別 |
+| `metadata_listener_stopped/session_lock_released/session_stopped` | owned listener/lockを片付けた。pending/failedはレビュー対象 |
+
+health確認は明示start時だけです。固定127.0.0.1:43126のlistener PIDをclient PIDと照合した後、healthz/readyzへ認証headerなしGETを行います。1 request最大1秒、redirect拒否、body/header破棄でstatusだけ分類します。PID照合はOSの同時変更に対する原子的証明ではありません。残り起動期限によるabort/raceと前後deadline確認で、late-readyやabortを無視するprobeから期限後の成功を出しません。

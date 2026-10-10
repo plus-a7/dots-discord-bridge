@@ -73,7 +73,7 @@ npm run demo:mock
 
 `demo:mock` は資格情報・環境変数を読まず、HTTP listenerも作りません。認証なしのRequest/Responseを同一プロセスで公式SDKへ渡し、署名確認済みのモックEventsとread/replyを手動で通します。実dotの代役はありません。出力は `mockOnly:true, liveDiscordPosts:0, liveDotWake:false` です。認証なしの公開endpointは提供していません。
 
-追加のTunnel準備試験は`npm run test:tunnel-metadata`で別途実行します（6件、mock-only）。`npm test`の156件には含まれません。Swift compiler、Python3、一時Unix/127.0.0.1 socketが必要です。実Keychainや実clientを起動しません。
+追加のTunnel準備試験は`npm run test:tunnel-metadata`で別途実行します（13件、mock-only）。`npm test`の156件には含まれません。Swift compiler、Python3、一時Unix/127.0.0.1 socketが必要です。実Keychainや実client接続を行いません。`npm run test:tunnel-client-config`は別の1件で、固定版公式binaryへ合成キーを渡し、全ネットワーク禁止・runtime構築前の設定エラーで二重読込みの再現と修正を確認します。
 
 再現結果と未試験項目は [検証記録](docs/validation.md)、独立レビューは [レビュー記録](docs/independent-review.md) に記録します。実装済みコード・残る実設定と接続承認は [最小リリース候補](docs/release-candidate.md)、導入順序・最小権限・rollbackと実dot受入判定は [導入手順](docs/operations.md) にまとめました。
 

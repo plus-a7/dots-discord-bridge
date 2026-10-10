@@ -236,3 +236,11 @@ An independent implementation review examined the native guardian, preparation/p
 The supplied independent evidence is **6/6 mock cases PASS**, zero failed/skipped/cancelled, using a separate TUNNEL_MOCK binary, synthetic credential and mock client. A separate C fixture checked descendant cleanup after natural leader exit. No blocking finding remained within that scope. Real Keychain access, installed-client FD4 handling, readiness, metadata rewriting and dot wake were not exercised. The guardian itself being forcibly killed remains outside the cleanup guarantee.
 
 The public helper substitutes unset reference placeholders for deployment-specific Keychain names and refuses production queries before the operator configures and rebuilds it. Tests remain synthetic. Startup diagnostics mean a helper launch request, not readiness. The provisional resource cannot be registered as an Auth0 API Identifier; authenticated discovery and live OAuth/plugin operations remain separate deployment gates.
+
+## Fixed diagnostics and official single-read regression review — 2026-10-10 UTC
+
+The supplied independent implementation review verified the bounded ASCII diagnostic decoder, fixed OSStatus categories, client/guardian exit distinctions, PID-bound status-only loopback health, deadline abort/race and cleanup. A late-ready ordering issue was corrected; the independently exercised final diagnostic suite passed **13/13**, with a later focused **1/1** signal-stimulus check. The mock signal uses SIGTERM; production logic is unchanged by that stimulus.
+
+The reviewer independently checked 0.0.16 YAML-before-CLI key resolution and ran the new official-binary regression **1/1 PASS**. The old duplicate FD4 reference classified EOF; the corrected sole CLI reference reached the intentional post-key MCP configuration sentinel. The pinned binary used only synthetic credentials and deny-all-network sandbox, with runtime construction prevented. No unresolved finding remained in the reviewed scope. Actual authentication, readiness, resource mapping and live wake were not verified.
+
+The public native helper retains unset Keychain service/account placeholders. A fixed `tunnel_helper_reference_unconfigured` diagnostic rejects production reference lookup until local customization, rebuild and repinning. Private reference names and operator history are excluded.

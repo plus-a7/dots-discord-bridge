@@ -11,8 +11,8 @@
 | `test/*.ts` | ダミーID、生成RSA鍵、fake credential/JWKS/Discord/callback fixtureと回帰試験 |
 | `scripts/build-keychain.mjs`, `scripts/check-setup.mjs` | compile-only buildと公開checkout-only setup checker |
 | `native/keychain-reader.swift` | helperの元コードのみ |
-| `native/tunnel-keychain-launcher.swift`, `test/tunnel-metadata.test.mjs` | 手動metadata-only helperの元コードと合成キーmock試験 |
-| `scripts/build-tunnel-keychain.mjs`, `scripts/tunnel-plan.mjs`, `scripts/prepare-tunnel-metadata.mjs`, `scripts/tunnel-session-core.mjs`, `scripts/tunnel-metadata.mjs` | compile・private準備・hash確認・本人開始/停止。実ID・キーは含まない |
+| `native/tunnel-keychain-launcher.swift`, `test/tunnel-metadata.test.mjs`, `test/tunnel-client-pipe.test.mjs` | 手動metadata-only helperの元コードと合成キーmock試験 |
+| `scripts/build-tunnel-keychain.mjs`, `scripts/tunnel-plan.mjs`, `scripts/prepare-tunnel-metadata.mjs`, `scripts/tunnel-session-core.mjs`, `scripts/tunnel-metadata.mjs`, `scripts/tunnel-diagnostics.mjs`, `scripts/check-tunnel-client-pipe.py` | compile・private準備・hash確認・本人開始/停止。実ID・キーは含まない |
 | `deploy/local.discord-dot-bridge.plist.example` | 未設定・disabled・未登録テンプレート |
 | `docs/*.md` | 現行手順、履歴、検証・レビュー、公開範囲 |
 | `docs/licenses/` | 採用依存版のLICENSE/NOTICE写し、inventory/provenanceの非秘密記録 |

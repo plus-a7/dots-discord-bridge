@@ -150,3 +150,15 @@ Implementation evidence supplied with this change: typecheck, production Swift c
 Mock cases cover inherited FD4 delivery without credential values in argv/environment/diagnostics, FD3 parent control closure, explicit stop and timeout, startup/client failures, exclusive session ownership, hard parent death and stale-lock denial, Terminal SIGHUP cleanup, fragmented stop acknowledgement, metadata GET and MCP/Events 401, and CLI non-TTY/activation/override refusal. LICENSE/NOTICE and the Homebrew-generated SBOM are preserved for the referenced release. No binary redistribution audit or source-license selection is claimed.
 
 Actual Keychain read/ACL, installed-client FD4 read/runtime authentication/readiness, Tunnel metadata rewriting/ChatGPT resource display, Auth0 compatibility, dot subscription/async wake and Discord reply are unverified by these mocks. Guardian SIGKILL/OS failure is outside cleanup guarantees. A pending stop or stale lock requires operator review before restart or lock removal. See [manual procedure](tunnel-metadata.md).
+
+## Single-read FD4 and bounded startup diagnostics — 2026-10-10 UTC
+
+The generated YAML no longer contains APIKey. Official 0.0.16 resolves YAML file references before resolving the CLI override, so the old duplicate consumable pipe reached EOF on its second read. The native CLI is now the sole reference. Schema-only validation is explicitly distinguished from runtime/key/authentication validation.
+
+Supplied final evidence: typecheck and existing **156/156 PASS**, separate **13/13 mock startup cases PASS**, and **1/1 official-binary configuration regression PASS**, zero failed/skipped/cancelled. The public integration reruns these checks separately. The official regression uses synthetic bytes, deny-all-network sandbox, an intentional MCP max0 configuration sentinel before runtime construction, and bounded exact fixed stderr classifications; it reads no private config or Keychain and performs no real connection.
+
+The diagnostics tests cover synthetic Keychain classifications, client/guardian exit and signal distinction, bounded non-reflecting FD3 frames, stage failures, PID-bound fixed-port health status, redirect/abort/timeout, deadline race and late/nonsettling probes, and cleanup. The public production helper also rejects unset Keychain placeholders with a fixed diagnostic. Mock fixtures use SIGTERM to exercise signal reporting without generating intentional crash reports.
+
+Actual saved-key validity, official Control Plane authentication/readiness, resource mapping/display, OAuth compatibility and dot/Discord acceptance remain unverified. Local readiness and credential handoff diagnostics do not establish those outcomes. Source/license/dependency snapshots remain separate from private settings and binaries.
+
+Public checkout verification of this correction: typecheck, JS/Python syntax, production Swift compilation, existing156, mock13 and official configuration1 all PASS, zero failed/skipped/cancelled. Public setup remains offlineReady:true/liveReady:false and demo remains liveDiscordPosts:0/liveDotWake:false. This run used no real key, private profile or live service.
