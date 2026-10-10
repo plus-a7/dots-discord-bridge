@@ -9,6 +9,11 @@
   "scripts": {
     "build": "tsc",
     "build:keychain": "node scripts/build-keychain.mjs",
+    "build:tunnel-helper": "node scripts/build-tunnel-keychain.mjs",
+    "test:tunnel-metadata": "npm run build && node --test test/tunnel-metadata.test.mjs",
+    "tunnel:check": "node scripts/tunnel-metadata.mjs --check",
+    "tunnel:start": "node scripts/tunnel-metadata.mjs --start --person-start",
+    "tunnel:stop": "node scripts/tunnel-metadata.mjs --stop",
     "typecheck": "tsc --noEmit",
     "test": "npm run build && npm run build:keychain && node --test dist/test/*.test.js",
     "demo:mock": "npm run build && node dist/src/mock-runtime.js",

@@ -4,6 +4,8 @@
 
 `oauth-setup.example.json`はdisabled/未設定です。本番version 2とは互換にせず、通常runへ渡すと拒否します。セットアップへowner/Bot/token/callback URL/secret等の余分なfieldを追加しても拒否します。ダミーownerやwildcard callbackで不足を埋めません。
 
+[一時Tunnel metadata確認](tunnel-metadata.md)は別の診断経路です。Tunnel書換えを観察するための明示的な暫定resourceは本番resourceの代用ではなく、Auth0 APIへ登録禁止です。実接続の確認は未実施で、通常setup/本番のresource確定条件は維持します。
+
 ## 先に確定する非秘密値
 
 | field | 確認元 |

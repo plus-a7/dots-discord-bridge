@@ -140,3 +140,13 @@ License follow-up: all three missing shipped MIT texts were recovered at the exa
 - Directory/SQLite alias guards prevent existing accidental symlink/hardlink targets. Same-UID concurrent path replacement and the protection of the OS account/backups remain external boundaries.
 
 A mock 2xx and hand-driven tools call are not reported as actual wake success. The code contains no replacement LLM. No Claude generation was run because existing no-extra-cost execution entitlement was not established. No public repository/push/license grant was made.
+
+## Manual Tunnel metadata preparation — 2026-10-10 UTC
+
+The separate manual preparation targets official `openai/tools/tunnel-client` 0.0.16. The public native helper has unset Keychain service/account placeholders and refuses a production query until configured locally, rebuilt, and repinned. Private profiles and credentials are not shipped. Static plan checks establish file/hash/permission consistency only, not Keychain availability or service readiness.
+
+Implementation evidence supplied with this change: typecheck, production Swift compilation and JS syntax checks PASS; existing **156/156 npm tests PASS** and a separate **6/6 Tunnel mock tests PASS**, zero failed/skipped/cancelled. The six compile a different TUNNEL_MOCK binary and use synthetic credentials, mock client/descendant processes and temporary Unix/literal127.0.0.1 sockets. They are not included in npm test.
+
+Mock cases cover inherited FD4 delivery without credential values in argv/environment/diagnostics, FD3 parent control closure, explicit stop and timeout, startup/client failures, exclusive session ownership, hard parent death and stale-lock denial, Terminal SIGHUP cleanup, fragmented stop acknowledgement, metadata GET and MCP/Events 401, and CLI non-TTY/activation/override refusal. LICENSE/NOTICE and the Homebrew-generated SBOM are preserved for the referenced release. No binary redistribution audit or source-license selection is claimed.
+
+Actual Keychain read/ACL, installed-client FD4 read/runtime authentication/readiness, Tunnel metadata rewriting/ChatGPT resource display, Auth0 compatibility, dot subscription/async wake and Discord reply are unverified by these mocks. Guardian SIGKILL/OS failure is outside cleanup guarantees. A pending stop or stale lock requires operator review before restart or lock removal. See [manual procedure](tunnel-metadata.md).

@@ -4,6 +4,8 @@
 
 Bot未接続の初回準備は [OAuth metadataセットアップ](docs/oauth-setup.md) を使います。issuer/resource確定後にowner/callbackなしでmetadata/401だけを提供し、有効JWTでもMCP/Eventsを拒否します。本番への自動切替はありません。
 
+手動の一時Tunnel metadata確認用に、公式tunnel-client 0.0.16向けのhash固定profileとKeychain参照helperを用意しました。[一時Tunnel metadata手順](docs/tunnel-metadata.md)を参照してください。公開helperは参照名が未設定のため実キーを読み出せません。実client認証・readiness・resource取得は未検証で、本番ブリッジは未接続です。
+
 ## 確認した公式仕様と境界
 
 2026-10-07確認、2026-10-09関連仕様を再確認：[OpenAI MCP Events](https://developers.openai.com/plugins/build/mcp-events)、[接続方法](https://developers.openai.com/plugins/deploy/connect-chatgpt)、[Discord Gateway](https://docs.discord.com/developers/events/gateway)、[Discord Threads](https://docs.discord.com/developers/topics/threads)、[公式MCP TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk)。
@@ -70,6 +72,8 @@ npm run demo:mock
 依存の取得以外、外部通信は不要です。`npm test`は156件、`npm run test:unit`はsocketなし130件、`npm run test:loopback`は一時127.0.0.1 listenerを使う26件です。sandboxでbindが禁止される環境ではloopback試験だけローカルlistenerの実行許可が必要です。testは実際の公式MCP v2 SDKをRequest/Responseで通し、モックcallbackが署名を検証し、モックDiscordへ返信します。fixtureからの手動tool呼出しはdotの代替LLMではなく、プロトコルの検証です。テスト用ID・会話はすべてダミーで、実データを取り込みません。
 
 `demo:mock` は資格情報・環境変数を読まず、HTTP listenerも作りません。認証なしのRequest/Responseを同一プロセスで公式SDKへ渡し、署名確認済みのモックEventsとread/replyを手動で通します。実dotの代役はありません。出力は `mockOnly:true, liveDiscordPosts:0, liveDotWake:false` です。認証なしの公開endpointは提供していません。
+
+追加のTunnel準備試験は`npm run test:tunnel-metadata`で別途実行します（6件、mock-only）。`npm test`の156件には含まれません。Swift compiler、Python3、一時Unix/127.0.0.1 socketが必要です。実Keychainや実clientを起動しません。
 
 再現結果と未試験項目は [検証記録](docs/validation.md)、独立レビューは [レビュー記録](docs/independent-review.md) に記録します。実装済みコード・残る実設定と接続承認は [最小リリース候補](docs/release-candidate.md)、導入順序・最小権限・rollbackと実dot受入判定は [導入手順](docs/operations.md) にまとめました。
 

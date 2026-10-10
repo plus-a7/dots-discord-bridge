@@ -228,3 +228,11 @@ Reviewed setup-only configuration, shared OAuth metadata generation, separated c
 The generated-child module-hook test refuses production Discord/bootstrap/Keychain/JWKS/callback/runtime/MCP imports and SQLite construction. Strict separate configuration, no automatic production fallback, valid-JWT MCP/Events denial, explicit activation, and host-only non-reflecting/non-trusting/non-persistent diagnostics are covered. No blocking code finding remained within this offline scope.
 
 Setup prepares protected-resource metadata and 401 challenges only. It does not establish successful OAuth/plugin registration, actual callback-host acquisition, or dot wake. Production requires a confirmed owner subject, callback host, resource URI and Bot ownership. Public-client none plus PKCE is a candidate to verify with the actual identity-provider plan and client registration flow, not a free-plan guarantee.
+
+## Manual Tunnel guardian review — 2026-10-10 UTC
+
+An independent implementation review examined the native guardian, preparation/plan/CLI/session scripts and mock tests. The final implementation corrects early client-leader exit leaving descendants alive, missing SIGHUP cleanup, and premature rejection of a fragmented STOPPING acknowledgement. Native and Node signal handlers cover SIGHUP, process-group cleanup covers natural and requested exit, and stop acknowledgement accumulation is bounded.
+
+The supplied independent evidence is **6/6 mock cases PASS**, zero failed/skipped/cancelled, using a separate TUNNEL_MOCK binary, synthetic credential and mock client. A separate C fixture checked descendant cleanup after natural leader exit. No blocking finding remained within that scope. Real Keychain access, installed-client FD4 handling, readiness, metadata rewriting and dot wake were not exercised. The guardian itself being forcibly killed remains outside the cleanup guarantee.
+
+The public helper substitutes unset reference placeholders for deployment-specific Keychain names and refuses production queries before the operator configures and rebuilds it. Tests remain synthetic. Startup diagnostics mean a helper launch request, not readiness. The provisional resource cannot be registered as an Auth0 API Identifier; authenticated discovery and live OAuth/plugin operations remain separate deployment gates.

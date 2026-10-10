@@ -1,0 +1,79 @@
+{
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "spdxVersion": "SPDX-2.3",
+  "name": "SBOM-SPDX-tunnel-client-0.0.16",
+  "creationInfo": {
+    "created": "2026-10-06T21:55:27Z",
+    "creators": [
+      "Tool: https://github.com/Homebrew/brew"
+    ]
+  },
+  "dataLicense": "CC0-1.0",
+  "documentNamespace": "https://formulae.brew.sh/spdx/tunnel-client-0.0.16.json",
+  "documentDescribes": [
+    "SPDXRef-Archive-tunnel-client-src",
+    "SPDXRef-Compiler"
+  ],
+  "files": [
+    {
+      "SPDXID": "SPDXRef-File-tunnel-client",
+      "fileName": "tunnel-client-v0.0.16-darwin-arm64.zip",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "a160820d45089b5253d8d671fe2a689bde0f73d78c135d1497a7b33f28a3ac62"
+        }
+      ]
+    }
+  ],
+  "packages": [
+    {
+      "SPDXID": "SPDXRef-Archive-tunnel-client-src",
+      "name": "tunnel-client",
+      "versionInfo": "0.0.16",
+      "filesAnalyzed": false,
+      "licenseDeclared": "NOASSERTION",
+      "builtDate": "2026-10-06T21:55:27Z",
+      "licenseConcluded": "Apache-2.0",
+      "downloadLocation": "https://persistent.oaistatic.com/tunnel-client/v0.0.16/tunnel-client-v0.0.16-darwin-arm64.zip",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:brew/openai/tools/tunnel-client@0.0.16",
+          "referenceType": "purl"
+        }
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "a160820d45089b5253d8d671fe2a689bde0f73d78c135d1497a7b33f28a3ac62"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Compiler",
+      "name": "clang",
+      "versionInfo": "27.0",
+      "filesAnalyzed": false,
+      "licenseDeclared": "NOASSERTION",
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "checksums": [],
+      "externalRefs": []
+    }
+  ],
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-File-tunnel-client",
+      "relationshipType": "PACKAGE_OF",
+      "relatedSpdxElement": "SPDXRef-Archive-tunnel-client-src"
+    },
+    {
+      "spdxElementId": "SPDXRef-Compiler",
+      "relationshipType": "BUILD_TOOL_OF",
+      "relatedSpdxElement": "SPDXRef-Archive-tunnel-client-src"
+    }
+  ]
+}

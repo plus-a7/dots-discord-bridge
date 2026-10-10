@@ -1,6 +1,6 @@
 # 公開担当への引渡し範囲
 
-2026-10-09。本人が公開repo作成を別担当へ許可しました。この実装担当はrepo作成・git操作・pushを行いません。追加差分の最終レビュー完了後に、明示allowlistから別の安全なstagingを作ってください。作業領域全体をコピーする手順ではありません。
+公開用stagingは、レビュー済みの明示allowlistから作成します。実運用設定・秘密・作業履歴を除外し、配布対象だけを検証して公開してください。
 
 ## 含めるファイル
 
@@ -11,11 +11,13 @@
 | `test/*.ts` | ダミーID、生成RSA鍵、fake credential/JWKS/Discord/callback fixtureと回帰試験 |
 | `scripts/build-keychain.mjs`, `scripts/check-setup.mjs` | compile-only buildと公開checkout-only setup checker |
 | `native/keychain-reader.swift` | helperの元コードのみ |
+| `native/tunnel-keychain-launcher.swift`, `test/tunnel-metadata.test.mjs` | 手動metadata-only helperの元コードと合成キーmock試験 |
+| `scripts/build-tunnel-keychain.mjs`, `scripts/tunnel-plan.mjs`, `scripts/prepare-tunnel-metadata.mjs`, `scripts/tunnel-session-core.mjs`, `scripts/tunnel-metadata.mjs` | compile・private準備・hash確認・本人開始/停止。実ID・キーは含まない |
 | `deploy/local.discord-dot-bridge.plist.example` | 未設定・disabled・未登録テンプレート |
 | `docs/*.md` | 現行手順、履歴、検証・レビュー、公開範囲 |
 | `docs/licenses/` | 採用依存版のLICENSE/NOTICE写し、inventory/provenanceの非秘密記録 |
 
-公開前にstaging側でallowlistの実体、symlinkやbinary混入、公開テンプレートのダミー値、実個人情報・token・会話の不在を再確認してください。`package-lock.json`は固定依存の再現用で含めます。新たな依存追加はありません。Tunnel clientは未採用・未同梱です。将来同梱するならその採用版と配布物のLICENSE/NOTICEを別途確認します。
+公開前にstaging側でallowlistの実体、symlinkやbinary混入、公開テンプレートのダミー値、実個人情報・token・会話の不在を再確認してください。`package-lock.json`は固定依存の再現用で含めます。新たなnpm依存追加はありません。手動Tunnel準備は公式client 0.0.16を対象としますがclient/cloudflared binaryは同梱しません。参照版LICENSE/NOTICE/SBOMをdocs/licensesへ保存します。公開native helperのKeychain参照名は未設定placeholderで、変更・再compile・plan再作成前には実キーを取得できません。将来binaryを同梱するなら配布物全体の依存ライセンスを再点検します。
 
 ## 除外対象
 
